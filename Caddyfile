@@ -1,0 +1,34 @@
+# Automatic HTTPS
+:80 {
+    # API Backend
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+
+    # WebSocket for monitoring
+    handle /ws/* {
+        reverse_proxy backend:8000
+    }
+
+    # Frontend
+    handle /* {
+        reverse_proxy frontend:3000
+    }
+
+    # Security headers
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Logging
+    log {
+        output stdout
+        format json
+    }
+
+    # Compression
+    encode gzip
+}
